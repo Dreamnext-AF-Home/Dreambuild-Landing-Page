@@ -7,13 +7,13 @@ import { ProcessSection } from "@/components/landing/process-section";
 import { ProjectsSection } from "@/components/landing/projects-section";
 import { ServicesSection } from "@/components/landing/services-section";
 import { TestimonialsSection } from "@/components/landing/testimonials-section";
-import { WhoWeAreSection } from "@/components/landing/who-we-are-section";
+import { Header } from "@/components/shared/header";
 
 export default function Home() {
   return (
     <main className="min-h-screen overflow-hidden bg-[var(--background)] text-[var(--foreground)]">
+      <Header />
       <HeroSection />
-      <WhoWeAreSection />
       <ServicesSection />
       <GallerySection />
       <ProjectsSection />

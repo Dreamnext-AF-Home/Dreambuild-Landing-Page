@@ -1,65 +1,152 @@
 "use client";
 
+import { useState } from "react";
 import { testimonials } from "@/lib/landing-data";
-import { FadeUp, StaggerContainer, StaggerItem, motion } from "@/components/ui/motion";
+import { motion, AnimatePresence } from "framer-motion";
+import { FadeUp } from "@/components/ui/motion";
 
 export function TestimonialsSection() {
+  const [current, setCurrent] = useState(0);
+
+  const prev = () => setCurrent((i) => (i - 1 + testimonials.length) % testimonials.length);
+  const next = () => setCurrent((i) => (i + 1) % testimonials.length);
+
+  const active = testimonials[current];
+
   return (
-    <section className="bg-white py-20 lg:py-32">
+    <section className="bg-white py-24 lg:py-36 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        {/* Section Header */}
-        <FadeUp className="mx-auto max-w-3xl text-center">
-          <p className="text-xs font-medium tracking-widest text-[var(--muted)] uppercase">
-            Client Testimonials
+
+        {/* Header */}
+        <FadeUp className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div>
+            <p className="inline-flex items-center gap-2 text-xs font-medium tracking-widest text-[var(--muted)] uppercase">
+              <span className="h-px w-8 bg-[var(--muted)]" />
+              Client Testimonials
+            </p>
+            <h2 className="mt-4 text-3xl font-medium tracking-tight text-[var(--foreground)] sm:text-4xl lg:text-5xl">
+              What clients say.
+            </h2>
+          </div>
+          <p className="max-w-xs text-sm leading-relaxed text-[var(--muted)] lg:text-right">
+            Real feedback from homeowners who trusted us with their spaces.
           </p>
-          <h2 className="mt-4 text-3xl font-medium tracking-tight text-[var(--foreground)] sm:text-4xl lg:text-5xl">
-            What our clients say about working with us
-          </h2>
         </FadeUp>
 
-        {/* Testimonials Grid */}
-        <StaggerContainer className="mt-12 grid gap-6 lg:mt-16 lg:grid-cols-2" staggerDelay={0.15}>
-          {testimonials.map((item, index) => (
-            <StaggerItem key={item.name}>
-              <motion.article
-                whileHover={{ y: -8 }}
-                transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-                className="rounded-2xl border border-[var(--border)] bg-[var(--background)] p-8 lg:p-10 h-full transition-shadow hover:shadow-lg"
+        {/* Main testimonial block */}
+        <div className="mt-16 grid gap-12 lg:mt-20 lg:grid-cols-[1fr_1.8fr] lg:gap-20">
+
+          {/* Left — Author + Nav */}
+          <div className="flex flex-col justify-between gap-10">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={current}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+                className="flex flex-col gap-6"
               >
-                {/* Quote Icon */}
-                <svg
-                  className="h-8 w-8 text-[var(--accent)]"
-                  fill="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
-                </svg>
-
-                {/* Quote */}
-                <p className="mt-6 text-lg leading-relaxed text-[var(--foreground)]">
-                  {item.quote}
-                </p>
-
-                {/* Author */}
-                <div className="mt-8 flex items-center gap-4">
-                  <div
-                    className={`h-12 w-12 rounded-full ${
-                      index === 0
-                        ? "bg-gradient-to-br from-[#d4c8b8] to-[#e8e0d4]"
-                        : "bg-gradient-to-br from-[#c0b0a0] to-[#d8cec0]"
-                    }`}
-                  />
+                {/* Avatar */}
+                <div className="flex items-center gap-4">
+                  <div className="relative h-16 w-16 overflow-hidden rounded-full bg-gradient-to-br from-[#d4c8b8] to-[#b8a898]">
+                    <span className="absolute inset-0 flex items-center justify-center text-lg font-medium text-white">
+                      {active.name.charAt(0)}
+                    </span>
+                  </div>
                   <div>
-                    <p className="font-medium text-[var(--foreground)]">
-                      {item.name}
-                    </p>
-                    <p className="text-sm text-[var(--muted)]">{item.role}</p>
+                    <p className="font-medium text-[var(--foreground)]">{active.name}</p>
+                    <p className="text-sm text-[var(--muted)]">{active.role}</p>
                   </div>
                 </div>
-              </motion.article>
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
+
+                {/* Divider + rating */}
+                <div className="flex items-center gap-3">
+                  <div className="h-px flex-1 bg-[var(--border)]" />
+                  <div className="flex gap-0.5">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <svg key={i} className="h-4 w-4 text-[var(--accent)]" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Counter */}
+                <p className="text-xs font-medium tracking-widest text-[var(--muted)] uppercase">
+                  {String(current + 1).padStart(2, "0")} / {String(testimonials.length).padStart(2, "0")}
+                </p>
+              </motion.div>
+            </AnimatePresence>
+
+            {/* Navigation */}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={prev}
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-white text-[var(--foreground)] transition-all hover:bg-[var(--dark)] hover:text-white hover:border-[var(--dark)]"
+                aria-label="Previous testimonial"
+              >
+                ←
+              </button>
+              <button
+                onClick={next}
+                className="flex h-11 w-11 items-center justify-center rounded-full border border-[var(--border)] bg-white text-[var(--foreground)] transition-all hover:bg-[var(--dark)] hover:text-white hover:border-[var(--dark)]"
+                aria-label="Next testimonial"
+              >
+                →
+              </button>
+              {/* Dots */}
+              <div className="ml-2 flex items-center gap-2">
+                {testimonials.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setCurrent(i)}
+                    aria-label={`Go to testimonial ${i + 1}`}
+                  >
+                    <motion.span
+                      animate={{
+                        width: i === current ? 20 : 6,
+                        backgroundColor: i === current ? "var(--foreground)" : "var(--border)",
+                      }}
+                      transition={{ duration: 0.3 }}
+                      className="block h-1.5 rounded-full"
+                    />
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Right — Quote */}
+          <div className="relative flex flex-col justify-center">
+            {/* Large decorative quote mark */}
+            <div className="pointer-events-none absolute -top-8 -left-4 select-none text-[10rem] font-bold leading-none text-[var(--border)] opacity-50 lg:-left-8">
+              "
+            </div>
+
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={current}
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -30 }}
+                transition={{ duration: 0.5, ease: [0.25, 0.1, 0.25, 1] }}
+              >
+                <blockquote className="relative text-2xl font-medium leading-relaxed tracking-tight text-[var(--foreground)] sm:text-3xl lg:text-4xl">
+                  {active.quote}
+                </blockquote>
+
+                {/* Tag */}
+                <div className="mt-10 inline-flex items-center rounded-full border border-[var(--border)] bg-[var(--background)] px-4 py-2">
+                  <span className="text-xs font-medium tracking-widest text-[var(--muted)] uppercase">
+                    Verified Client
+                  </span>
+                </div>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+
+        </div>
       </div>
     </section>
   );

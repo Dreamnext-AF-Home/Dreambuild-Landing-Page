@@ -2,143 +2,72 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { navigation, stats } from "@/lib/landing-data";
-import { useState } from "react";
+import { stats } from "@/lib/landing-data";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FadeUp, FadeIn, SlideInLeft, SlideInRight, StaggerContainer, StaggerItem } from "@/components/ui/motion";
+import { FadeUp, StaggerContainer, StaggerItem } from "@/components/ui/motion";
+
+// Replace these with your actual project images later
+const carouselSlides = [
+  {
+    src: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800&q=80",
+    alt: "Modern living room with warm neutrals",
+    label: "Living Room",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=800&q=80",
+    alt: "Minimalist bedroom interior",
+    label: "Bedroom",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=800&q=80",
+    alt: "Clean kitchen design",
+    label: "Kitchen",
+  },
+  {
+    src: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&q=80",
+    alt: "Elegant dining area",
+    label: "Dining",
+  },
+];
 
 export function HeroSection() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const startTimer = () => {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % carouselSlides.length);
+    }, 4000);
+  };
+
+  useEffect(() => {
+    startTimer();
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, []);
+
+  const goTo = (index: number) => {
+    setCurrentSlide(index);
+    startTimer();
+  };
+
+  const handleDragEnd = (_: unknown, info: { offset: { x: number } }) => {
+    setIsDragging(false);
+    if (info.offset.x < -50) {
+      goTo((currentSlide + 1) % carouselSlides.length);
+    } else if (info.offset.x > 50) {
+      goTo((currentSlide - 1 + carouselSlides.length) % carouselSlides.length);
+    }
+  };
 
   return (
     <section className="relative min-h-screen">
-      {/* Header */}
-      <motion.header
-        initial={{ y: -100, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-        className="fixed top-0 left-0 right-0 z-50 bg-[var(--background)]/80 backdrop-blur-md border-b border-[var(--border)]"
-      >
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="flex h-16 items-center justify-between">
-            <Link href="/" className="flex items-center">
-              <Image
-                src="/Images/DreambuildBanner.jpg"
-                alt="Dreambuild Design Studio"
-                width={180}
-                height={60}
-                className="h-8 w-auto object-contain"
-                priority
-              />
-            </Link>
-
-            {/* Desktop Navigation */}
-            <nav className="hidden items-center gap-8 md:flex">
-              {navigation.map((item, index) => (
-                <motion.div
-                  key={item.href}
-                  initial={{ opacity: 0, y: -20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4, delay: 0.1 + index * 0.05 }}
-                >
-                  <Link
-                    href={item.href}
-                    className="text-sm text-[var(--muted)] transition-colors hover:text-[var(--foreground)]"
-                  >
-                    {item.label}
-                  </Link>
-                </motion.div>
-              ))}
-            </nav>
-
-            <div className="flex items-center gap-4">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4, delay: 0.4 }}
-              >
-                <Link
-                  href="#contact"
-                  className="hidden rounded-full bg-[var(--dark)] px-5 py-2.5 text-sm font-medium text-white transition-all hover:bg-[var(--dark-muted)] sm:inline-flex"
-                >
-                  Book Consult
-                </Link>
-              </motion.div>
-
-              {/* Mobile Menu Button */}
-              <button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-[var(--border)] md:hidden"
-                aria-label="Toggle menu"
-              >
-                <div className="flex flex-col gap-1">
-                  <motion.span
-                    animate={mobileMenuOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
-                    className="h-0.5 w-4 bg-[var(--foreground)]"
-                  />
-                  <motion.span
-                    animate={mobileMenuOpen ? { opacity: 0 } : { opacity: 1 }}
-                    className="h-0.5 w-4 bg-[var(--foreground)]"
-                  />
-                  <motion.span
-                    animate={mobileMenuOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
-                    className="h-0.5 w-4 bg-[var(--foreground)]"
-                  />
-                </div>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Menu */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3, ease: [0.25, 0.1, 0.25, 1] }}
-              className="border-t border-[var(--border)] bg-[var(--background)] px-6 overflow-hidden md:hidden"
-            >
-              <nav className="flex flex-col gap-3 py-4">
-                {navigation.map((item, index) => (
-                  <motion.div
-                    key={item.href}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ duration: 0.3, delay: index * 0.05 }}
-                  >
-                    <Link
-                      href={item.href}
-                      onClick={() => setMobileMenuOpen(false)}
-                      className="py-2 text-sm text-[var(--muted)] transition-colors hover:text-[var(--foreground)] block"
-                    >
-                      {item.label}
-                    </Link>
-                  </motion.div>
-                ))}
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ duration: 0.3, delay: navigation.length * 0.05 }}
-                >
-                  <Link
-                    href="#contact"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="mt-2 rounded-full bg-[var(--dark)] px-5 py-2.5 text-center text-sm font-medium text-white block"
-                  >
-                    Book Consult
-                  </Link>
-                </motion.div>
-              </nav>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.header>
-
       {/* Hero Content */}
       <div className="mx-auto max-w-7xl px-6 pt-32 pb-20 lg:px-8 lg:pt-40 lg:pb-32">
         <div className="grid gap-16 lg:grid-cols-2 lg:items-center lg:gap-20">
+
           {/* Left Column */}
           <div className="max-w-2xl">
             <FadeUp delay={0.2}>
@@ -155,8 +84,8 @@ export function HeroSection() {
 
             <FadeUp delay={0.4}>
               <p className="mt-6 text-lg leading-relaxed text-[var(--muted)]">
-                Dreambuild creates calm, polished interiors through thoughtful planning, 
-                clean material stories, and a modern design language that feels elevated 
+                Dreambuild creates calm, polished interiors through thoughtful planning,
+                clean material stories, and a modern design language that feels elevated
                 without becoming cold.
               </p>
             </FadeUp>
@@ -193,58 +122,86 @@ export function HeroSection() {
             </StaggerContainer>
           </div>
 
-          {/* Right Column - Visual */}
-          <SlideInRight delay={0.4} className="relative">
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-4">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.6, delay: 0.5 }}
-                  className="overflow-hidden rounded-2xl bg-[#e8e3db]"
-                >
-                  <div className="aspect-[4/5] bg-gradient-to-br from-[#d4cdc3] via-[#c9bfb2] to-[#b8a99a]" />
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: 0.7 }}
-                  className="rounded-2xl bg-[var(--dark)] p-6 text-white"
-                >
-                  <p className="text-xs font-medium tracking-widest text-[var(--accent)] uppercase">
-                    Design Philosophy
-                  </p>
-                  <p className="mt-3 text-sm leading-relaxed text-neutral-300">
-                    Elegant, clean, and presentation-ready layouts with a modern studio tone.
-                  </p>
-                </motion.div>
-              </div>
-              <div className="space-y-4 pt-8 sm:pt-12">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.6, delay: 0.6 }}
-                  className="overflow-hidden rounded-2xl bg-[#f0ebe3]"
-                >
-                  <div className="aspect-[4/3] bg-gradient-to-br from-[#e6dfd5] via-[#d9cfc2] to-[#ccc0b0]" />
-                </motion.div>
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.6, delay: 0.8 }}
-                  className="overflow-hidden rounded-2xl bg-[#e2dbd1]"
-                >
-                  <div className="aspect-square bg-gradient-to-br from-[#d6cdc1] via-[#cbbfb1] to-[#bfb1a0]" />
-                </motion.div>
-              </div>
-            </div>
-
-            {/* Floating Card */}
+          {/* Right Column - Carousel */}
+          <motion.div
+            initial={{ opacity: 0, x: 60 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.7, delay: 0.4, ease: [0.25, 0.1, 0.25, 1] }}
+            className="relative"
+          >
             <motion.div
-              initial={{ opacity: 0, x: -40, y: 20 }}
-              animate={{ opacity: 1, x: 0, y: 0 }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.08}
+              onDragStart={() => setIsDragging(true)}
+              onDragEnd={handleDragEnd}
+              className={`relative overflow-hidden rounded-3xl aspect-[4/5] w-full shadow-2xl select-none ${
+                isDragging ? "cursor-grabbing" : "cursor-grab"
+              }`}
+            >
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentSlide}
+                  initial={{ opacity: 0, scale: 1.05 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.98 }}
+                  transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }}
+                  className="absolute inset-0 pointer-events-none"
+                >
+                  <Image
+                    src={carouselSlides[currentSlide].src}
+                    alt={carouselSlides[currentSlide].alt}
+                    fill
+                    className="object-cover"
+                    priority={currentSlide === 0}
+                    draggable={false}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                </motion.div>
+              </AnimatePresence>
+
+              {/* Slide label + dots */}
+              <div className="absolute bottom-6 left-6 right-6 flex items-end justify-between pointer-events-none">
+                <AnimatePresence mode="wait">
+                  <motion.p
+                    key={`label-${currentSlide}`}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    transition={{ duration: 0.4 }}
+                    className="text-xs font-medium tracking-widest text-white/80 uppercase"
+                  >
+                    {carouselSlides[currentSlide].label}
+                  </motion.p>
+                </AnimatePresence>
+
+                <div className="flex items-center gap-2 pointer-events-auto">
+                  {carouselSlides.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => goTo(index)}
+                      aria-label={`Go to slide ${index + 1}`}
+                    >
+                      <motion.span
+                        animate={{
+                          width: index === currentSlide ? 20 : 6,
+                          opacity: index === currentSlide ? 1 : 0.5,
+                        }}
+                        transition={{ duration: 0.3 }}
+                        className="block h-1.5 rounded-full bg-white"
+                      />
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+
+            {/* Floating card */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: 1 }}
-              className="absolute -left-4 bottom-16 max-w-[200px] rounded-xl border border-[var(--border)] bg-white p-4 shadow-lg sm:bottom-24 sm:max-w-[220px]"
+              className="absolute -left-6 top-10 rounded-2xl border border-[var(--border)] bg-white p-5 shadow-xl"
             >
               <p className="text-xs font-medium tracking-widest text-[var(--muted)] uppercase">
                 Signature Style
@@ -253,7 +210,8 @@ export function HeroSection() {
                 Warm neutrals with refined, modern polish
               </p>
             </motion.div>
-          </SlideInRight>
+          </motion.div>
+
         </div>
       </div>
     </section>
