@@ -5,25 +5,25 @@ import Image from "next/image";
 import { useRef, useState } from "react";
 import { motion, useMotionValue, useAnimationFrame } from "framer-motion";
 import { FadeUp } from "@/components/ui/motion";
+import { galleryItems as defaultGalleryItems } from "@/lib/landing-data";
 
-const galleryImages = [
-  { src: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=600&q=80", title: "Living Room Styling", aspect: "aspect-[4/3]" },
-  { src: "https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=600&q=80", title: "Bedroom Material Story", aspect: "aspect-[3/4]" },
-  { src: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80", title: "Modern Kitchen Detail", aspect: "aspect-[4/3]" },
-  { src: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=600&q=80", title: "Dining Space Layers", aspect: "aspect-[3/4]" },
-  { src: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80", title: "Lounge Accent Detail", aspect: "aspect-[4/3]" },
-  { src: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80", title: "Warm Neutral Interior", aspect: "aspect-[3/4]" },
+const defaultGalleryImages = [
+  { src: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=600&q=80", title: "Living Room Styling", aspect: "aspect-[4/3]" as const },
+  { src: "https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=600&q=80", title: "Bedroom Material Story", aspect: "aspect-[3/4]" as const },
+  { src: "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80", title: "Modern Kitchen Detail", aspect: "aspect-[4/3]" as const },
+  { src: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=600&q=80", title: "Dining Space Layers", aspect: "aspect-[3/4]" as const },
+  { src: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&q=80", title: "Lounge Accent Detail", aspect: "aspect-[4/3]" as const },
+  { src: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80", title: "Warm Neutral Interior", aspect: "aspect-[3/4]" as const },
 ];
 
-const row1 = [...galleryImages, ...galleryImages];
-const row2 = [...galleryImages.slice().reverse(), ...galleryImages.slice().reverse()];
+type GalleryImage = typeof defaultGalleryImages[number];
 
 function MarqueeRow({
   items,
   direction = "left",
   speed = 70,
 }: {
-  items: typeof galleryImages;
+  items: GalleryImage[];
   direction?: "left" | "right";
   speed?: number;
 }) {
@@ -97,7 +97,14 @@ function MarqueeRow({
   );
 }
 
-export function GallerySection() {
+export function GallerySection({ galleryItems = defaultGalleryItems }: { galleryItems?: typeof defaultGalleryItems }) {
+  const galleryImages = defaultGalleryImages.map((fallback, index) => ({
+    ...fallback,
+    title: galleryItems[index]?.title ?? fallback.title,
+  }));
+  const row1 = [...galleryImages, ...galleryImages];
+  const row2 = [...galleryImages.slice().reverse(), ...galleryImages.slice().reverse()];
+
   return (
     <section id="gallery" className="bg-[var(--background)] py-24 lg:py-36 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -133,7 +140,7 @@ export function GallerySection() {
               Hover to slow down — click to explore
             </p>
             <p className="text-sm text-[var(--muted)]">
-              {galleryImages.length} curated spaces
+              {galleryItems.length} curated spaces
             </p>
           </div>
         </FadeUp>

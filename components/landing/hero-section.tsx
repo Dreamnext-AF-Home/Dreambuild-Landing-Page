@@ -2,13 +2,12 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { stats } from "@/lib/landing-data";
-import { useState, useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { FadeUp, StaggerContainer, StaggerItem } from "@/components/ui/motion";
+import type { HeroContent } from "@/lib/dreambuild-cms";
 
-// Replace these with your actual project images later
-const carouselSlides = [
+const defaultCarouselSlides = [
   {
     src: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=800&q=80",
     alt: "Modern living room with warm neutrals",
@@ -31,22 +30,23 @@ const carouselSlides = [
   },
 ];
 
-export function HeroSection() {
+export function HeroSection({ content }: { content: HeroContent }) {
+  const carouselSlides = content.carouselSlides.length ? content.carouselSlides : defaultCarouselSlides;
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  const startTimer = () => {
+  const startTimer = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
       setCurrentSlide((prev) => (prev + 1) % carouselSlides.length);
     }, 4000);
-  };
+  }, [carouselSlides.length]);
 
   useEffect(() => {
     startTimer();
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, []);
+  }, [startTimer]);
 
   const goTo = (index: number) => {
     setCurrentSlide(index);
@@ -72,44 +72,42 @@ export function HeroSection() {
           <div className="max-w-2xl">
             <FadeUp delay={0.2}>
               <p className="inline-flex items-center rounded-full border border-[var(--border)] bg-white px-4 py-1.5 text-xs font-medium tracking-wide text-[var(--muted)] uppercase">
-                Interior Design Studio
+                {content.eyebrow}
               </p>
             </FadeUp>
 
             <FadeUp delay={0.3}>
               <h1 className="mt-8 text-4xl font-medium leading-tight tracking-tight text-[var(--foreground)] text-balance sm:text-5xl lg:text-6xl">
-                Refined interiors for homes that seek clarity and character
+                {content.title}
               </h1>
             </FadeUp>
 
             <FadeUp delay={0.4}>
               <p className="mt-6 text-lg leading-relaxed text-[var(--muted)]">
-                Dreambuild creates calm, polished interiors through thoughtful planning,
-                clean material stories, and a modern design language that feels elevated
-                without becoming cold.
+                {content.body}
               </p>
             </FadeUp>
 
             <FadeUp delay={0.5}>
               <div className="mt-10 flex flex-col gap-4 sm:flex-row sm:items-center">
                 <Link
-                  href="#services"
+                  href={content.primaryButtonUrl}
                   className="inline-flex items-center justify-center rounded-full bg-[var(--dark)] px-6 py-3.5 text-sm font-medium text-white transition-all hover:bg-[var(--dark-muted)] hover:scale-105"
                 >
-                  Explore Services
+                  {content.primaryButtonText}
                 </Link>
                 <Link
-                  href="/projects"
+                  href={content.secondaryButtonUrl}
                   className="inline-flex items-center justify-center rounded-full border border-[var(--border)] bg-white px-6 py-3.5 text-sm font-medium text-[var(--foreground)] transition-all hover:border-[var(--foreground)] hover:scale-105"
                 >
-                  View Projects
+                  {content.secondaryButtonText}
                 </Link>
               </div>
             </FadeUp>
 
             {/* Stats */}
             <StaggerContainer className="mt-16 grid grid-cols-3 gap-8" staggerDelay={0.15}>
-              {stats.map((item) => (
+              {content.stats.map((item) => (
                 <StaggerItem key={item.label}>
                   <p className="text-3xl font-medium tracking-tight text-[var(--foreground)] lg:text-4xl">
                     {item.value}
@@ -207,7 +205,7 @@ export function HeroSection() {
                 Signature Style
               </p>
               <p className="mt-2 text-sm font-medium text-[var(--foreground)]">
-                Warm neutrals with refined, modern polish
+                {content.signatureLabel}
               </p>
             </motion.div>
           </motion.div>

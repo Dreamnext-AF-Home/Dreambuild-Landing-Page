@@ -1,14 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { FadeUp, SlideInLeft, SlideInRight } from "@/components/ui/motion";
+import { SlideInLeft, SlideInRight } from "@/components/ui/motion";
 import { motion } from "framer-motion";
-
-const contactDetails = [
-  { label: "Email", value: "hello@dreambuild.studio" },
-  { label: "Location", value: "Metro Manila, Philippines" },
-  { label: "Response Time", value: "Within 24 hours" },
-];
 
 const projectTypes = [
   "Full Interior Design",
@@ -17,7 +11,23 @@ const projectTypes = [
   "Not sure yet",
 ];
 
-export function ContactSection() {
+type ContactContent = {
+  title: string;
+  body: string;
+  email: string;
+  phone?: string;
+  address: string;
+};
+
+const defaultContact: ContactContent = {
+  title: "Ready to build something remarkable?",
+  body:
+    "Tell us about your space and what you're looking for. We'll get back to you within 24 hours to set up a free consultation.",
+  email: "hello@dreambuild.studio",
+  address: "Metro Manila, Philippines",
+};
+
+export function ContactSection({ contact = defaultContact }: { contact?: ContactContent }) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -31,6 +41,12 @@ export function ContactSection() {
     // Wire up to your backend here
     setSubmitted(true);
   };
+  const contactDetails = [
+    { label: "Email", value: contact.email },
+    ...(contact.phone ? [{ label: "Phone", value: contact.phone }] : []),
+    { label: "Location", value: contact.address },
+    { label: "Response Time", value: "Within 24 hours" },
+  ];
 
   return (
     <section id="contact" className="relative overflow-hidden py-24 lg:py-36">
@@ -38,7 +54,7 @@ export function ContactSection() {
       {/* Decorative background text */}
       <div className="pointer-events-none absolute inset-0 flex items-center justify-center select-none overflow-hidden">
         <span className="text-[clamp(5rem,18vw,14rem)] font-bold leading-none tracking-tighter text-[var(--border)] opacity-30 whitespace-nowrap">
-          LET'S TALK
+          LET&apos;S TALK
         </span>
       </div>
 
@@ -52,10 +68,10 @@ export function ContactSection() {
               Start Your Project
             </p>
             <h2 className="mt-5 text-4xl font-medium leading-tight tracking-tight text-[var(--foreground)] sm:text-5xl lg:text-6xl">
-              Ready to build something remarkable?
+              {contact.title}
             </h2>
             <p className="mt-6 text-base leading-relaxed text-[var(--muted)]">
-              Tell us about your space and what you're looking for. We'll get back to you within 24 hours to set up a free consultation.
+              {contact.body}
             </p>
 
             {/* Contact details */}
@@ -104,7 +120,7 @@ export function ContactSection() {
                   Message sent!
                 </h3>
                 <p className="mt-3 text-sm leading-relaxed text-[var(--muted)]">
-                  Thanks for reaching out. We'll be in touch within 24 hours.
+                  Thanks for reaching out. We&apos;ll be in touch within 24 hours.
                 </p>
               </motion.div>
             ) : (
@@ -191,7 +207,7 @@ export function ContactSection() {
                   </motion.button>
 
                   <p className="text-center text-xs text-[var(--muted)]">
-                    No commitment. We'll reach out to learn more before anything begins.
+                    No commitment. We&apos;ll reach out to learn more before anything begins.
                   </p>
                 </div>
               </form>

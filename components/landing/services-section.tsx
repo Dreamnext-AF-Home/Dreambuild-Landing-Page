@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { services } from "@/lib/landing-data";
+import { services as defaultServices } from "@/lib/landing-data";
 import { FadeUp, SlideInLeft, SlideInRight, StaggerContainer, StaggerItem } from "@/components/ui/motion";
 import { motion } from "framer-motion";
 
@@ -12,7 +12,7 @@ const serviceImages = [
   "https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=900&q=80",
 ];
 
-export function ServicesSection() {
+export function ServicesSection({ services = defaultServices }: { services?: typeof defaultServices }) {
   return (
     <section id="services" className="overflow-hidden py-24 lg:py-36">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -59,13 +59,13 @@ export function ServicesSection() {
                         <ServiceContent service={service} />
                       </SlideInLeft>
                       <SlideInRight delay={0.15} className="lg:order-2">
-                        <ServiceImage src={serviceImages[index]} alt={service.title} id={service.id} />
+                        <ServiceImage src={serviceImages[index] ?? serviceImages[index % serviceImages.length]} alt={service.title} id={service.id} />
                       </SlideInRight>
                     </>
                   ) : (
                     <>
                       <SlideInLeft className="lg:order-1">
-                        <ServiceImage src={serviceImages[index]} alt={service.title} id={service.id} />
+                        <ServiceImage src={serviceImages[index] ?? serviceImages[index % serviceImages.length]} alt={service.title} id={service.id} />
                       </SlideInLeft>
                       <SlideInRight delay={0.15} className="flex flex-col justify-center lg:order-2">
                         <ServiceContent service={service} />
@@ -121,7 +121,7 @@ function ServiceImage({ src, alt, id }: { src: string; alt: string; id: string }
   );
 }
 
-function ServiceContent({ service }: { service: typeof import("@/lib/landing-data").services[number] }) {
+function ServiceContent({ service }: { service: typeof defaultServices[number] }) {
   return (
     <div>
       <p className="text-xs font-medium tracking-widest text-[var(--muted)] uppercase">

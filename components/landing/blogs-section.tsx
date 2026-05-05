@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { blogPosts } from "@/lib/landing-data";
-import { FadeUp, SlideInLeft, SlideInRight, StaggerContainer, StaggerItem, motion } from "@/components/ui/motion";
+import { blogPosts as defaultBlogPosts } from "@/lib/landing-data";
+import type { DreamBuildBlogPost } from "@/lib/dreambuild-cms";
+import { FadeUp, SlideInLeft, StaggerContainer, StaggerItem, motion } from "@/components/ui/motion";
 
 const blogImages = [
   "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=900&q=80",
@@ -11,9 +12,11 @@ const blogImages = [
   "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80",
 ];
 
-export function BlogsSection() {
+export function BlogsSection({ blogPosts = defaultBlogPosts }: { blogPosts?: DreamBuildBlogPost[] }) {
   const featured = blogPosts[0];
   const rest = blogPosts.slice(1, 3);
+
+  if (!featured) return null;
 
   return (
     <section className="bg-white py-24 lg:py-36">
@@ -50,7 +53,7 @@ export function BlogsSection() {
               {/* Image */}
               <div className="relative aspect-[16/10] overflow-hidden lg:aspect-auto">
                 <Image
-                  src={blogImages[0]}
+                  src={featured.image || blogImages[0]}
                   alt={featured.title}
                   fill
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
@@ -113,7 +116,7 @@ export function BlogsSection() {
                   {/* Image */}
                   <div className="relative aspect-[16/9] overflow-hidden">
                     <Image
-                      src={blogImages[i + 1]}
+                      src={post.image || blogImages[i + 1]}
                       alt={post.title}
                       fill
                       className="object-cover transition-transform duration-700 group-hover:scale-105"

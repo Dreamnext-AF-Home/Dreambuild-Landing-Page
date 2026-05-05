@@ -1,14 +1,19 @@
-"use client";
-
 import Link from "next/link";
-import { notFound, useParams } from "next/navigation";
+import Image from "next/image";
+import { notFound } from "next/navigation";
 import { Header } from "@/components/shared/header";
-import { blogPosts } from "@/lib/landing-data";
+import { getDreamBuildContent } from "@/lib/dreambuild-cms";
 import { FadeUp, FadeIn, ScaleUp, StaggerContainer, StaggerItem } from "@/components/ui/motion";
 
-export default function BlogPostPage() {
-  const params = useParams();
-  const id = params.id as string;
+type BlogPostPageProps = {
+  params: Promise<{ id: string }>;
+};
+
+export const dynamic = "force-dynamic";
+
+export default async function BlogPostPage({ params }: BlogPostPageProps) {
+  const { id } = await params;
+  const { blogPosts } = await getDreamBuildContent();
   const post = blogPosts.find((p) => p.id === id);
 
   if (!post) {
@@ -17,6 +22,11 @@ export default function BlogPostPage() {
 
   const postIndex = blogPosts.findIndex((p) => p.id === id);
   const relatedPosts = blogPosts.filter((_, index) => index !== postIndex).slice(0, 2);
+  const fallbackImages = [
+    "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=900&q=80",
+    "https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=600&q=80",
+    "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80",
+  ];
 
   return (
     <main className="min-h-screen bg-[var(--background)]">
@@ -65,8 +75,13 @@ export default function BlogPostPage() {
         {/* Featured Image */}
         <div className="mx-auto mt-12 max-w-5xl px-6 lg:px-8">
           <ScaleUp delay={0.4}>
-            <div className="overflow-hidden rounded-2xl">
-              <div className="aspect-[16/9] bg-gradient-to-br from-[#e8e0d4] via-[#d4c8b8] to-[#c0b0a0]" />
+            <div className="relative aspect-[16/9] overflow-hidden rounded-2xl">
+              <Image
+                src={post.image || fallbackImages[0]}
+                alt={post.title}
+                fill
+                className="object-cover"
+              />
             </div>
           </ScaleUp>
         </div>
@@ -76,9 +91,8 @@ export default function BlogPostPage() {
           <FadeUp delay={0.5}>
             <div className="prose prose-lg prose-neutral max-w-none">
               <p className="text-base leading-relaxed text-[var(--muted)]">
-                Creating a space that feels both modern and warm requires a careful balance of materials, 
-                colors, and textures. The key is to start with a neutral foundation and layer in elements 
-                that add personality without overwhelming the senses.
+                {post.body ||
+                  "Creating a space that feels both modern and warm requires a careful balance of materials, colors, and textures. The key is to start with a neutral foundation and layer in elements that add personality without overwhelming the senses."}
               </p>
 
               <h2 className="mt-12 text-2xl font-medium tracking-tight text-[var(--foreground)]">
@@ -187,13 +201,14 @@ export default function BlogPostPage() {
                 <article className="group">
                   <Link href={`/blogs/${relatedPost.id}`} className="block">
                     <div className="overflow-hidden rounded-2xl">
-                      <div
-                        className={`aspect-[16/10] transition-transform duration-500 group-hover:scale-105 ${
-                          index === 0
-                            ? "bg-gradient-to-br from-[#d8cec0] via-[#e8e0d4] to-[#ccc0b0]"
-                            : "bg-gradient-to-br from-[#e0d8cc] via-[#d0c4b4] to-[#c4b8a8]"
-                        }`}
-                      />
+                      <div className="relative aspect-[16/10]">
+                        <Image
+                          src={relatedPost.image || fallbackImages[(index + 1) % fallbackImages.length]}
+                          alt={relatedPost.title}
+                          fill
+                          className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      </div>
                     </div>
                     <div className="mt-5">
                       <div className="flex items-center gap-3">

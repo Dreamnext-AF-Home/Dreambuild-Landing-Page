@@ -1,12 +1,14 @@
 "use client";
 
 import { useState } from "react";
-import { testimonials } from "@/lib/landing-data";
+import { testimonials as defaultTestimonials } from "@/lib/landing-data";
 import { motion, AnimatePresence } from "framer-motion";
 import { FadeUp } from "@/components/ui/motion";
 
-export function TestimonialsSection() {
+export function TestimonialsSection({ testimonials = defaultTestimonials }: { testimonials?: typeof defaultTestimonials }) {
   const [current, setCurrent] = useState(0);
+
+  if (testimonials.length === 0) return null;
 
   const prev = () => setCurrent((i) => (i - 1 + testimonials.length) % testimonials.length);
   const next = () => setCurrent((i) => (i + 1) % testimonials.length);
@@ -121,7 +123,7 @@ export function TestimonialsSection() {
           <div className="relative flex flex-col justify-center">
             {/* Large decorative quote mark */}
             <div className="pointer-events-none absolute -top-8 -left-4 select-none text-[10rem] font-bold leading-none text-[var(--border)] opacity-50 lg:-left-8">
-              "
+              &quot;
             </div>
 
             <AnimatePresence mode="wait">

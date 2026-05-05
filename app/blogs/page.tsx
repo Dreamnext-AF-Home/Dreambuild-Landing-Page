@@ -1,15 +1,20 @@
-"use client";
-
 import Link from "next/link";
+import Image from "next/image";
 import { Header } from "@/components/shared/header";
-import { blogPosts } from "@/lib/landing-data";
+import { getDreamBuildContent } from "@/lib/dreambuild-cms";
 import { FadeUp, FadeIn, SlideInLeft, SlideInRight, StaggerContainer, StaggerItem } from "@/components/ui/motion";
 
-export default function BlogsPage() {
+export const dynamic = "force-dynamic";
+
+export default async function BlogsPage() {
+  const { blogPosts } = await getDreamBuildContent();
   const featuredPost = blogPosts[0];
   const otherPosts = blogPosts.slice(1);
-  console.log("Rendering BlogsPage with featured post:", featuredPost);
-  console.log("Other posts:", otherPosts);
+  const fallbackImages = [
+    "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?w=900&q=80",
+    "https://images.unsplash.com/photo-1631679706909-1844bbd07221?w=600&q=80",
+    "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=600&q=80",
+  ];
 
   return (
     <main className="min-h-screen bg-[var(--background)]">
@@ -46,8 +51,13 @@ export default function BlogsPage() {
             <Link href={`/blogs/${featuredPost.id}`} className="block">
               <div className="grid gap-8 lg:grid-cols-2 lg:gap-12">
                 <SlideInLeft>
-                  <div className="overflow-hidden rounded-2xl">
-                    <div className="aspect-[4/3] bg-gradient-to-br from-[#e8e0d4] via-[#d4c8b8] to-[#c0b0a0] transition-transform duration-700 group-hover:scale-105" />
+                  <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
+                    <Image
+                      src={featuredPost.image || fallbackImages[0]}
+                      alt={featuredPost.title}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-105"
+                    />
                   </div>
                 </SlideInLeft>
                 <SlideInRight className="flex flex-col justify-center">
@@ -103,15 +113,12 @@ export default function BlogsPage() {
               <StaggerItem key={post.id}>
                 <article className="group">
                   <Link href={`/blogs/${post.id}`} className="block">
-                    <div className="overflow-hidden rounded-2xl">
-                      <div
-                        className={`aspect-[16/10] transition-transform duration-500 group-hover:scale-105 ${
-                          index % 3 === 0
-                            ? "bg-gradient-to-br from-[#d8cec0] via-[#e8e0d4] to-[#ccc0b0]"
-                            : index % 3 === 1
-                              ? "bg-gradient-to-br from-[#f5f0e8] via-[#e8e0d4] to-[#d8cec0]"
-                              : "bg-gradient-to-br from-[#e0d8cc] via-[#d0c4b4] to-[#c4b8a8]"
-                        }`}
+                    <div className="relative aspect-[16/10] overflow-hidden rounded-2xl">
+                      <Image
+                        src={post.image || fallbackImages[(index + 1) % fallbackImages.length]}
+                        alt={post.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
                     </div>
                     <div className="mt-5">

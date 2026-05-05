@@ -1,10 +1,10 @@
 "use client";
 
-import { processSteps } from "@/lib/landing-data";
+import { processSteps as defaultProcessSteps } from "@/lib/landing-data";
 import { FadeUp, SlideInLeft, StaggerContainer, StaggerItem } from "@/components/ui/motion";
 import { motion } from "framer-motion";
 
-export function ProcessSection() {
+export function ProcessSection({ processSteps = defaultProcessSteps }: { processSteps?: typeof defaultProcessSteps }) {
   return (
     <section id="process" className="bg-[var(--dark)] py-24 lg:py-36 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { projects } from "@/lib/landing-data";
+import { projects as defaultProjects } from "@/lib/landing-data";
 import { FadeUp, motion } from "@/components/ui/motion";
 
 const projectImages = [
@@ -27,7 +27,7 @@ const aspectConfig = [
   "aspect-[4/3]",
 ];
 
-export function ProjectsSection() {
+export function ProjectsSection({ projects = defaultProjects }: { projects?: typeof defaultProjects }) {
   return (
     <section id="projects" className="bg-white py-24 lg:py-36">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -40,7 +40,7 @@ export function ProjectsSection() {
               Featured Projects
             </p>
             <h2 className="mt-4 text-3xl font-medium tracking-tight text-[var(--foreground)] sm:text-4xl lg:text-5xl">
-              Spaces we've shaped and styled.
+              Spaces we&apos;ve shaped and styled.
             </h2>
           </div>
           <Link
@@ -61,13 +61,13 @@ export function ProjectsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-80px" }}
               transition={{ duration: 0.6, delay: index * 0.1, ease: [0.25, 0.1, 0.25, 1] }}
-              className={bentoConfig[index]}
+              className={bentoConfig[index] ?? bentoConfig[index % bentoConfig.length]}
             >
               <Link href="/projects" className="group relative block h-full overflow-hidden rounded-2xl">
                 {/* Image */}
-                <div className={`relative w-full overflow-hidden ${aspectConfig[index]}`}>
+                <div className={`relative w-full overflow-hidden ${aspectConfig[index] ?? aspectConfig[index % aspectConfig.length]}`}>
                   <Image
-                    src={projectImages[index]}
+                    src={projectImages[index] ?? projectImages[index % projectImages.length]}
                     alt={project.title}
                     fill
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
