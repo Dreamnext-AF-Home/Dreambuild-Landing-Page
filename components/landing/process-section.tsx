@@ -1,10 +1,11 @@
 "use client";
 
 import { processSteps as defaultProcessSteps } from "@/lib/landing-data";
+import type { ProcessStepContent } from "@/lib/dreambuild-cms";
 import { FadeUp, SlideInLeft, StaggerContainer, StaggerItem } from "@/components/ui/motion";
 import { motion } from "framer-motion";
 
-export function ProcessSection({ processSteps = defaultProcessSteps }: { processSteps?: typeof defaultProcessSteps }) {
+export function ProcessSection({ processSteps = defaultProcessSteps }: { processSteps?: ProcessStepContent[] }) {
   return (
     <section id="process" className="bg-[var(--dark)] py-24 lg:py-36 overflow-hidden">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
@@ -60,7 +61,7 @@ export function ProcessSection({ processSteps = defaultProcessSteps }: { process
                   <div className="relative z-10 flex items-center gap-5 lg:flex-col lg:items-start lg:gap-0">
                     <div className="flex h-[6.5rem] w-[6.5rem] shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/5 backdrop-blur-sm lg:h-[6.5rem] lg:w-[6.5rem]">
                       <span className="text-3xl font-bold tracking-tighter text-white">
-                        {String(index + 1).padStart(2, "0")}
+                        {step.stepNumber || String(index + 1).padStart(2, "0")}
                       </span>
                     </div>
 
@@ -73,7 +74,7 @@ export function ProcessSection({ processSteps = defaultProcessSteps }: { process
                   {/* Content */}
                   <div className="mt-8 pl-0">
                     <p className="text-xs font-medium tracking-widest text-[var(--accent)] uppercase">
-                      Step {String(index + 1).padStart(2, "0")}
+                      Step {step.stepNumber || String(index + 1).padStart(2, "0")}
                     </p>
                     <h3 className="mt-3 text-2xl font-medium tracking-tight text-white lg:text-3xl">
                       {step.title}

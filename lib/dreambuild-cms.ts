@@ -36,9 +36,18 @@ export type HeroContent = {
   carouselSlides: Array<{ src: string; alt: string; label: string }>;
 };
 
+export type ProcessStepContent = (typeof processSteps)[number] & {
+  stepNumber?: string;
+};
+
 export type DreamBuildBlogPost = (typeof blogPosts)[number] & {
   image?: string;
   body?: string;
+  designBrief?: string;
+  takeaways?: string[];
+  sections?: Array<{ title: string; body: string }>;
+  galleryImages?: string[];
+  faq?: Array<{ question: string; answer: string }>;
 };
 
 export type DreamBuildContent = {
@@ -46,7 +55,7 @@ export type DreamBuildContent = {
   services: typeof services;
   projects: typeof projects;
   galleryItems: typeof galleryItems;
-  processSteps: typeof processSteps;
+  processSteps: ProcessStepContent[];
   testimonials: typeof testimonials;
   blogPosts: DreamBuildBlogPost[];
   contact: {
@@ -131,6 +140,21 @@ const textList = (value: unknown, fallback: string[]) => {
   return fallback;
 };
 
+const pairsList = (value: unknown, fallback: Array<{ title: string; body: string }>) => {
+  const lines = textList(value, []);
+  const items = lines
+    .map((line, index) => {
+      const [title, ...bodyParts] = line.split("|");
+      return {
+        title: title?.trim() || `Section ${index + 1}`,
+        body: bodyParts.join("|").trim(),
+      };
+    })
+    .filter((item) => item.title && item.body);
+
+  return items.length ? items : fallback;
+};
+
 const getApiBase = () => {
   const raw =
     process.env.NEXT_PUBLIC_API_URL ||
@@ -160,6 +184,25 @@ const byIndex = <T>(items: CmsItem[], defaults: readonly T[], mapper: (item: Cms
     const item = items[index];
     return item ? mapper(item, fallback, index) : fallback;
   });
+};
+
+const mapProcessSteps = (items: CmsItem[]): ProcessStepContent[] => {
+  if (!items.length) return [...processSteps];
+
+  return items
+    .filter((item) => item.is_active)
+    .sort((a, b) => a.sort_order - b.sort_order)
+    .map((item, index) => {
+      const fallback = processSteps[index] ?? processSteps[processSteps.length - 1];
+      const payload = item.payload ?? {};
+
+      return {
+        ...fallback,
+        stepNumber: text(payload.step_number, String(index + 1).padStart(2, "0")),
+        title: text(item.title, fallback.title),
+        description: text(item.body, fallback.description),
+      };
+    });
 };
 
 export async function getDreamBuildContent(): Promise<DreamBuildContent> {
@@ -223,6 +266,12 @@ export async function getDreamBuildContent(): Promise<DreamBuildContent> {
     }),
     blogPosts: byIndex(blogItems, blogPosts, (item, fallback) => {
       const payload = item.payload ?? {};
+      const sections = pairsList(payload.sections, []);
+      const faq = pairsList(payload.faq, []).map((item) => ({
+        question: item.title,
+        answer: item.body,
+      }));
+
       return {
         ...fallback,
         id: text(payload.slug, fallback.id),
@@ -233,6 +282,11 @@ export async function getDreamBuildContent(): Promise<DreamBuildContent> {
         image: text(item.image_url, ""),
         date: text(payload.date, fallback.date),
         readTime: text(payload.read_time, fallback.readTime),
+        designBrief: text(payload.design_brief, ""),
+        takeaways: textList(payload.takeaways, []),
+        sections,
+        galleryImages: textList(payload.gallery_images, []),
+        faq,
       };
     }),
     testimonials: byIndex(testimonialItems, testimonials, (item, fallback) => {
@@ -252,11 +306,7 @@ export async function getDreamBuildContent(): Promise<DreamBuildContent> {
         tone: text(payload.tone, fallback.tone) as typeof fallback.tone,
       };
     }),
-    processSteps: byIndex(processItems, processSteps, (item, fallback) => ({
-      ...fallback,
-      title: text(item.title, fallback.title),
-      description: text(item.body, fallback.description),
-    })),
+    processSteps: mapProcessSteps(processItems),
     contact: contactItems[0]
       ? {
           title: text(contactItems[0].title, defaultContact.title),

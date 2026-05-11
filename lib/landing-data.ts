@@ -129,6 +129,42 @@ export const blogPosts = [
       "A practical guide to layering neutrals, textures, and statement pieces without making the room feel heavy.",
     date: "March 15, 2024",
     readTime: "5 min read",
+    designBrief:
+      "Build the room around one warm anchor material, then balance it with breathable spacing, tactile surfaces, and low-glare light.",
+    takeaways: [
+      "Start with a calm base palette before adding accents",
+      "Repeat wood or woven tones at least three times",
+      "Use lighting layers instead of one bright ceiling source",
+    ],
+    sections: [
+      {
+        title: "Start With The Anchor",
+        body:
+          "Choose one dominant material story first: oak, walnut, rattan, linen, or warm stone. Repeating that story makes the space feel intentional instead of randomly decorated.",
+      },
+      {
+        title: "Layer Texture Before Color",
+        body:
+          "Warm modern rooms do not need many colors. They need matte, woven, brushed, and soft surfaces working together so neutral pieces still feel dimensional.",
+      },
+      {
+        title: "Keep The Layout Conversational",
+        body:
+          "Pull seating away from the walls when possible, keep paths clear, and let the coffee table connect the main pieces without crowding the center.",
+      },
+    ],
+    faq: [
+      {
+        question: "What makes a living room feel warm but still modern?",
+        answer:
+          "A restrained palette, repeated natural materials, simple silhouettes, and layered lighting create warmth without visual clutter.",
+      },
+      {
+        question: "Should every furniture piece match?",
+        answer:
+          "No. The room feels more refined when finishes relate to each other, but pieces still vary in texture, shape, or scale.",
+      },
+    ],
   },
   {
     id: "small-spaces-premium",
@@ -138,6 +174,30 @@ export const blogPosts = [
       "Simple finish decisions that elevate condos and compact homes while keeping the look clean and spacious.",
     date: "March 8, 2024",
     readTime: "4 min read",
+    designBrief:
+      "Compact homes feel elevated when the finishes are consistent, tactile, and edited down to a few strong decisions.",
+    takeaways: [
+      "Use fewer finishes with better repetition",
+      "Choose vertical storage that looks built-in",
+      "Avoid glossy overload in small rooms",
+    ],
+    sections: [
+      {
+        title: "Edit The Finish Palette",
+        body:
+          "Limit the room to two main finishes and one accent. This creates visual calm and helps inexpensive pieces feel more curated.",
+      },
+      {
+        title: "Use Height For Storage",
+        body:
+          "Tall cabinets, floating shelves, and vertical wall details draw the eye upward while keeping the floor open.",
+      },
+      {
+        title: "Make Utility Look Intentional",
+        body:
+          "Small spaces need hardworking pieces. Choose storage that has a clear design language so practical items do not look temporary.",
+      },
+    ],
   },
   {
     id: "before-renovate",
@@ -147,6 +207,30 @@ export const blogPosts = [
       "The key layout, lighting, and material choices you should settle before build-out starts.",
     date: "February 28, 2024",
     readTime: "6 min read",
+    designBrief:
+      "The best renovation work happens when the invisible decisions are settled before construction starts.",
+    takeaways: [
+      "Finalize traffic flow before buying furniture",
+      "Lock major lighting positions early",
+      "Decide built-ins before wall and outlet work",
+    ],
+    sections: [
+      {
+        title: "Plan The Daily Route",
+        body:
+          "Map how people move through the space at busy hours. Door swings, dining clearance, and storage access matter more than a beautiful mood board.",
+      },
+      {
+        title: "Decide Lighting Before Ceilings",
+        body:
+          "Ambient, task, and accent lighting should be planned before ceiling work begins so the final space feels layered.",
+      },
+      {
+        title: "Resolve Built-Ins Early",
+        body:
+          "Cabinets, wardrobes, media walls, and desks affect outlets, measurements, wall finishes, and budget timing.",
+      },
+    ],
   },
   {
     id: "neutral-palette-guide",
